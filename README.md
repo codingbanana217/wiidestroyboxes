@@ -1,2 +1,4 @@
 # wiidestroyboxes
-A DofE project
+A DofE project about destroying boxes.
+
+![ ](img/Screenshot.png)
