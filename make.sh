@@ -3,4 +3,4 @@ echo "compiling"
 # gcc -c *.c
 # cd ..
 
-gcc ./src/hello.c ./src/draw.c ./box2d/*.o -I./box2d/ -lm -lX11 -o hello -Wall
+gcc ./src/wiidestroyboxes.c ./src/draw.c ./box2d/*.o -I./box2d/ -lm -lX11 -o wiidestroyboxes -Wall
