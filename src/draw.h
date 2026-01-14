@@ -2,8 +2,6 @@
 
 void draw_rotated_rect(Display *d, Window w, GC gc,
                        int x, int y, int width, int height,
-                       double angle_deg);
+                       float angle_deg);
 
-void rotate_point(double cx, double cy, double angle,
-    double *x, double *y);
-                    
+
