@@ -52,23 +52,28 @@ int main(void) {
     b2CreatePolygonShape(groundId, &groundShapeDef, &groundBox);
 
     // make box
+    b2BodyId bodyId [5];
+
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.position = (b2Vec2){0.0, 4.0};
-    b2BodyId bodyId = b2CreateBody(worldId, &bodyDef);
     b2Polygon box = b2MakeBox(1.0, 1.0);
     b2ShapeDef shapeDef = b2DefaultShapeDef();
-    shapeDef.density = 1.0;
-    shapeDef.material.friction = 0.3;
-    b2CreatePolygonShape(bodyId, &shapeDef, &box);
-    b2Body_SetAngularVelocity(bodyId, 10.0);
+    bodyDef.type = b2_dynamicBody;
+    
+    for (int i=0;i<5;i++) {
+        bodyDef.position = (b2Vec2){0.0, 4.0};
+        bodyId[i] = b2CreateBody(worldId, &bodyDef);
+        shapeDef.density = 1.0;
+        shapeDef.material.friction = 0.3;
+        b2CreatePolygonShape(bodyId[i], &shapeDef, &box);
+        b2Body_SetAngularVelocity(bodyId[i], 10.0);
+    }
 
-    bodyDef.position = (b2Vec2){3.0, 6.0};
-    b2BodyId bodyId2 = b2CreateBody(worldId, &bodyDef);
-    shapeDef.density = 1.0;
-    shapeDef.material.friction = 0.3;
-    b2CreatePolygonShape(bodyId2, &shapeDef, &box);
-    b2Body_SetAngularVelocity(bodyId2, -5.0);
+    // bodyDef.position = (b2Vec2){3.0, 6.0};
+    // b2BodyId bodyId2 = b2CreateBody(worldId, &bodyDef);
+    // shapeDef.density = 1.0;
+    // shapeDef.material.friction = 0.3;
+    // b2CreatePolygonShape(bodyId2, &shapeDef, &box);
+    // b2Body_SetAngularVelocity(bodyId2, -5.0);
 
 
     // set sim stuff
@@ -77,14 +82,12 @@ int main(void) {
 
     for (int i=0;i<250;i++) {
         b2World_Step(worldId, timeStep, subStep);
-        b2Vec2 pos = b2Body_GetPosition(bodyId);
-        b2Rot rot = b2Body_GetRotation(bodyId);
-        b2Vec2 pos2 = b2Body_GetPosition(bodyId2);
-        b2Rot rot2 = b2Body_GetRotation(bodyId2);
-
         XClearWindow(display, window);
-        draw_rotated_rect(display, window, gc, scale_x(pos.x), scale_y(pos.y), 25, 25, b2Rot_GetAngle(rot));
-        draw_rotated_rect(display, window, gc, scale_x(pos2.x), scale_y(pos2.y), 25, 25, b2Rot_GetAngle(rot2));
+        for (int i=0;i<5;i++) {
+            b2Vec2 pos = b2Body_GetPosition(bodyId[i]);
+            b2Rot rot = b2Body_GetRotation(bodyId[i]);
+            draw_rotated_rect(display, window, gc, scale_x(pos.x), scale_y(pos.y), 25, 25, b2Rot_GetAngle(rot));
+        }
         XFlush(display);
 
         // printf("%4.2f %4.2f %4.2f\n", pos.x, pos.y, b2Rot_GetAngle(rot));
