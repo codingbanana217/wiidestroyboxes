@@ -1,12 +1,14 @@
 # wiidestroyboxes
-A DofE project about destroying boxes.
+A DofE project about destroying boxes that will run on the wii.
 
 
-![ ](img/Screenshot.png)
+# The old game (Made in godot)
+![ ](img/old_game.png)
 
 
-# v1
+# 1.0 (One box)
 ![ ](img/v1.png)
 
-# v2
+
+# 2.0 (A lot of boxes)
 ![ ](img/v2.png)
