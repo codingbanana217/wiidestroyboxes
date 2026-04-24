@@ -65,6 +65,7 @@ int score = 0;
 int ui_number = 0;
 bool debug = false;
 bool telemode = false;
+bool tnt_boxes = true;
 
 
 int main(int argc, char **argv) {
@@ -106,13 +107,9 @@ int main(int argc, char **argv) {
         WPAD_ScanPads();
         u32 pressed = WPAD_ButtonsDown(0) | WPAD_ButtonsDown(1) | WPAD_ButtonsDown(2) | WPAD_ButtonsDown(3);
 
-        if (pressed & WPAD_BUTTON_A) {
-            break;
-        }
-
         if (pressed & WPAD_BUTTON_DOWN) {
             ui_number++;
-            if (ui_number > 2) {
+            if (ui_number > 4) {
                 ui_number = 0;
             }
         }
@@ -120,36 +117,48 @@ int main(int argc, char **argv) {
         if (pressed & WPAD_BUTTON_UP) {
             ui_number--;
             if (ui_number < 0) {
-                ui_number = 2;
+                ui_number = 4;
             }
         }
 
-        if (pressed & WPAD_BUTTON_RIGHT) {
+        if (pressed & (WPAD_BUTTON_RIGHT | WPAD_BUTTON_A)) {
             if (ui_number == 0) {
+                break;
+            }
+            else if (ui_number == 1) {
                 difficulty++;
                 if (difficulty > 3 && !debug) {
                     difficulty = 1;
                 }
             }
-            else if (ui_number == 1) {
+            else if (ui_number == 2) {
                 telemode = !telemode;
             }
-            else if (ui_number == 2) {
+            else if (ui_number == 3) {
+                tnt_boxes = !tnt_boxes;
+            }
+            else if (ui_number == 4) {
                 debug = !debug;
             }
         }
 
-        if (pressed & WPAD_BUTTON_LEFT) {
+        if (pressed & (WPAD_BUTTON_LEFT | WPAD_BUTTON_B)) {
             if (ui_number == 0) {
+                break;
+            }
+            else if (ui_number == 1) {
                 difficulty--;
                 if (difficulty < 1 && !debug) {
                     difficulty = 3;
                 }
             }
-            else if (ui_number == 1) {
+            else if (ui_number == 2) {
                 telemode = !telemode;
             }
-            else if (ui_number == 2) {
+            else if (ui_number == 3) {
+                tnt_boxes = !tnt_boxes;
+            }
+            else if (ui_number == 4) {
                 debug = !debug;
             }
         }
@@ -157,27 +166,37 @@ int main(int argc, char **argv) {
         GRRLIB_FillScreen(GRRLIB_PURPLE);
         draw_wiimotes();
         
-        GRRLIB_Printf(250, 200, tex_BMfont5, GRRLIB_WHITE, 1, "Press A to start");
-
+        
         if (ui_number == 0) {
+            GRRLIB_Printf(250, 200, tex_BMfont5, GRRLIB_WHITE, 1, "> Start");
+        }
+        else {
+            GRRLIB_Printf(250, 200, tex_BMfont5, GRRLIB_WHITE, 1, "Start");
+        }
+
+        if (ui_number == 1) {
             GRRLIB_Printf(250, 225, tex_BMfont5, GRRLIB_WHITE, 1, "> Difficulty %d", difficulty);
         }
         else {
             GRRLIB_Printf(250, 225, tex_BMfont5, GRRLIB_WHITE, 1, "Difficulty %d", difficulty);
         }
 
-        if (ui_number == 1) {
+        if (ui_number == 2) {
             GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "> Teleport mode %d", telemode);
         }
         else {
             GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "Teleport mode %d", telemode);
         }
 
-        if (ui_number == 2 && debug) {
-            GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "> Debug %d", debug);
+        if (ui_number == 3) {
+            GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "> Tnt boxes %d", tnt_boxes);
         }
-        else if (debug) {
-            GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "Debug %d", debug);
+        else {
+            GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "Tnt boxes %d", tnt_boxes);
+        }
+
+        if (ui_number == 4 && debug) {
+            GRRLIB_Printf(250, 300, tex_BMfont5, GRRLIB_WHITE, 1, "> Debug %d", debug);
         }
 
         GRRLIB_Render();

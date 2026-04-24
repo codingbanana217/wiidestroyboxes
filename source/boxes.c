@@ -31,6 +31,7 @@ int frame = 0;
 
 extern int difficulty;
 extern int score;
+extern bool tnt_boxes;
 
 
 void setup_box2d(void) {
@@ -106,14 +107,14 @@ void box2d_next_frame(void) {
                 make_box(1.0, 6.0, -20.0, 6.0, TNT_BOX, 1, -10000);
             }
         }
-        // normal boxes
+        // boxes
         else if (rand() % 20 == 0) {
             make_box(1.0, pow(0.75 * rang_box_size, 2), -20.0, 1.0 * rang_box_size, TELE_BOX, 1 * rang_box_size, 50);
         }
         else if (rand() % 15 == 0) {
             make_box(1.0, pow(1.5 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, GOLD_BOX, 3 * rang_box_size, 30);
         }
-        else if (rand() % 10 == 0) {
+        else if (rand() % 10 == 0 && tnt_boxes) {
             make_box(1.0, pow(1.0 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, TNT_BOX, 1, -100 * difficulty);
         }
         else {
