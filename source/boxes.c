@@ -87,7 +87,7 @@ void box2d_next_frame(void) {
     }
     
     // make boxs
-    if (frame % 10 == 0) {
+    if (frame % 5 == 0) {
         boxDef.position = (b2Vec2){rand() % 10 - 5, 12};
         int rang_box_size = rand() % 3 + 1;
 
@@ -130,7 +130,7 @@ void box2d_next_frame(void) {
     }
     
     // move ground
-    b2Body_SetTransform(groundId, (b2Vec2){0.0, - 12}, b2MakeRot(sin(frame / 90.0 * difficulty) * 0.35));
+    b2Body_SetTransform(groundId, (b2Vec2){0.0, - 16.0}, b2MakeRot(sin(frame / 90.0 * difficulty) * 0.35));
     frame++;
 }
 
