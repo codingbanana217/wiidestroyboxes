@@ -63,7 +63,7 @@ float time_left;
 int difficulty = 2;
 int score = 0;
 int ui_number = 0;
-bool debug = false;
+bool secret = false;
 bool telemode = false;
 bool tnt_boxes = true;
 
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
             }
             else if (ui_number == 1) {
                 difficulty++;
-                if (difficulty > 3 && !debug) {
+                if (difficulty > 3 && !secret) {
                     difficulty = 1;
                 }
             }
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
                 tnt_boxes = !tnt_boxes;
             }
             else if (ui_number == 4) {
-                debug = !debug;
+                secret = !secret;
             }
         }
 
@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
             }
             else if (ui_number == 1) {
                 difficulty--;
-                if (difficulty < 1 && !debug) {
+                if (difficulty < 1 && !secret) {
                     difficulty = 3;
                 }
             }
@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
                 tnt_boxes = !tnt_boxes;
             }
             else if (ui_number == 4) {
-                debug = !debug;
+                secret = !secret;
             }
         }
 
@@ -195,8 +195,8 @@ int main(int argc, char **argv) {
             GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "Tnt boxes %d", tnt_boxes);
         }
 
-        if (ui_number == 4 && debug) {
-            GRRLIB_Printf(250, 300, tex_BMfont5, GRRLIB_WHITE, 1, "> Debug %d", debug);
+        if (ui_number == 4) {
+            GRRLIB_Printf(250, 300, tex_BMfont5, GRRLIB_WHITE, 1, "> Secret %d", secret);
         }
 
         GRRLIB_Render();
@@ -321,10 +321,6 @@ void draw_boxes() {
             }
             else if (box_img[i] == TNT_BOX) {
                 draw(pos.x, pos.y, tex_tnt_box, rot, box_size[i], box_size[i], 0xFFFFFFFF - light_effect);
-            }
-
-            if (debug) {
-                GRRLIB_Printf((data->ir.x * 25) + 320, (data->ir.y * - 25) + 264, tex_BMfont5, GRRLIB_WHITE, 1, "%d", light_effect);
             }
         }
     }
