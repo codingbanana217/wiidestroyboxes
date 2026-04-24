@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
 
     while (true) {
         WPAD_ScanPads();
-        u32 pressed = WPAD_ButtonsDown(0) | WPAD_ButtonsDown(1) | WPAD_ButtonsDown(2) | WPAD_ButtonsDown(3);
+        u32 pressed = WPAD_ButtonsDown(0);
 
         if (pressed & WPAD_BUTTON_DOWN) {
             ui_number++;
@@ -220,25 +220,30 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            if ((pressed && WPAD_BUTTON_A) || (pressed && WPAD_BUTTON_B)) {
+            if (pressed & WPAD_BUTTON_B) {
                 for (int i=0; i<boxes; i++) {
-                    if (disToPoint(data->ir.x, data->ir.y, b2Body_GetPosition(boxID[i]).x, b2Body_GetPosition(boxID[i]).y) < box_size[i] * 25) {
-                        box_hp[i] -= 1;
-                        score += box_score[i];
-                        box_hiting[i] = 6;
+                    if (box_img[i] == NOT_BOX) {
+                        continue;
+                    }
 
-                        if (box_img[i] == TELE_BOX || telemode) {
-                            respawn_box(i);
-                        }
+                    if (disToPoint(data->ir.x, data->ir.y, b2Body_GetPosition(boxID[i]).x, b2Body_GetPosition(boxID[i]).y) > box_size[i] * 25) {
+                        continue;
+                    }
 
-                        if (box_hp[i] <= 0) {
-                            b2Body_SetTransform(boxID[i], (b2Vec2){-1000, -1000}, b2MakeRot(0));
-                            b2Body_Disable(boxID[i]);
+                    box_hp[i] -= 1;
+                    score += box_score[i];
+                    box_hiting[i] = 6;
 
-                            if (box_img[i] != TNT_BOX) {
-                                score += box_score[i] * 2;
-                                time_limit += 0.1 / difficulty;
-                            }
+                    if (box_img[i] == TELE_BOX || telemode) {
+                        respawn_box(i);
+                    }
+
+                    if (box_hp[i] <= 0) {
+                        b2Body_Disable(boxID[i]);
+                        box_img[i] = NOT_BOX;
+
+                        if (box_img[i] != TNT_BOX) {
+                            time_limit += 0.1 / difficulty;
                         }
                     }
                 }
@@ -302,9 +307,12 @@ void draw_boxes() {
         }
 
         for (int i=0; i<boxes; i++) {
+            if (box_img[i] == NOT_BOX) {
+                continue;
+            }
+
             b2Vec2 pos = b2Body_GetPosition(boxID[i]);
             b2Rot rot = b2Body_GetRotation(boxID[i]);
-            // 
             int light_effect = clamp(disToPoint(data->ir.x, data->ir.y, pos.x, pos.y) * time_limit / time_left, 0, 255);
             
             if (box_hiting[i] > 0) {
