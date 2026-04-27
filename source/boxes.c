@@ -95,16 +95,16 @@ void box2d_next_frame(void) {
         if (frame == 900) {
             boxDef.position = (b2Vec2){0, 12};
             if (difficulty <= 1) {
-                make_box(1.0, 4.0, -20.0, 7.0, BOX, 40, 50);
+                make_box(1.0, 4.0, -20.0, 7.0, BOX, 50, 50);
             }
             else if (difficulty == 2) {
                 make_box(1.0, 8.0, -10.0, 5.0, GOLD_BOX, 40, 50);
             }
             else if (difficulty == 3) {
-                make_box(1.0, 6.0, -5.0, 4.0, TELE_BOX, 20, 200);
+                make_box(1.0, 6.0, -5.0, 5.0, TELE_BOX, 30, 100);
             }
             else if (difficulty >= 4) {
-                make_box(1.0, 6.0, -20.0, 6.0, TNT_BOX, 1, -10000);
+                make_box(1.0, 6.0, -20.0, 7.0, TNT_BOX, 1, -10000);
             }
         }
         // boxes
@@ -112,10 +112,10 @@ void box2d_next_frame(void) {
             make_box(1.0, pow(0.75 * rang_box_size, 2), -20.0, 1.0 * rang_box_size, TELE_BOX, 1 * rang_box_size, 50);
         }
         else if (rand() % 15 == 0) {
-            make_box(1.0, pow(1.5 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, GOLD_BOX, 3 * rang_box_size, 30);
+            make_box(1.0, pow(1.5 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, GOLD_BOX, 2 * rang_box_size, 30);
         }
         else if (rand() % 10 == 0 && tnt_boxes) {
-            make_box(1.0, pow(1.0 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, TNT_BOX, 1, -100 * difficulty);
+            make_box(1.0, pow(1.0 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, TNT_BOX, 1, -80 * difficulty);
         }
         else {
             make_box(1.0, pow(1.0 * rang_box_size, 2), -80, 1.0 * rang_box_size, BOX, 2 * rang_box_size, 10);

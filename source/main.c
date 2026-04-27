@@ -71,6 +71,7 @@ bool tnt_boxes = true;
 
 
 int main(int argc, char **argv) {
+    // setup
     GRRLIB_Init();
     
     // font
@@ -99,7 +100,7 @@ int main(int argc, char **argv) {
     tex_white = GRRLIB_LoadTexture(white_png);
     GRRLIB_SetMidHandle(tex_white, true);
 
-    // wiimote
+    // wiimote setup
     WPAD_Init();
     WPAD_SetDataFormat(WPAD_CHAN_ALL, WPAD_FMT_BTNS_ACC_IR);
 	
@@ -175,7 +176,6 @@ int main(int argc, char **argv) {
 
             GRRLIB_FillScreen(GRRLIB_PURPLE);
             draw_wiimotes();
-            
             
             if (ui_number == 0) {
                 GRRLIB_Printf(250, 200, tex_BMfont5, GRRLIB_WHITE, 1, "> Start");
