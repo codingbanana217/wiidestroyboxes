@@ -1,5 +1,5 @@
-<?xml version="0.9.0" encoding="UTF-8" standalone="yes"?>
-<app version="0.9.0">
+<?xml version="1.0.0" encoding="UTF-8" standalone="yes"?>
+<app version="1.0.0">
   <name>Wiidestroyboxes</name>
   <coder>codingbanana217</coder>
   <version>0.9.0</version>
@@ -11,7 +11,7 @@ The game will be about destroying boxes in a short amount of time by using with 
 
 Controls:
 (B) to attack the boxes
-(A & B & arrows) to navigate the menus
+(A and B and arrows) to navigate the menus
 
 Todo:
 - Fix player 4
