@@ -1,5 +1,5 @@
 #pragma once
-#define MAX_BOXES 2000
+#define MAX_BOXES 7200
 typedef enum {
     NOT_BOX,
     BOX,

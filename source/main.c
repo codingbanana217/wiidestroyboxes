@@ -63,6 +63,8 @@ float time_left;
 int difficulty = 2;
 int score = 0;
 int ui_number = 0;
+bool game_running = false;
+bool stop_game = false;
 bool secret = false;
 bool telemode = false;
 bool tnt_boxes = true;
@@ -101,170 +103,192 @@ int main(int argc, char **argv) {
     WPAD_Init();
     WPAD_SetDataFormat(WPAD_CHAN_ALL, WPAD_FMT_BTNS_ACC_IR);
 	
-	setup_box2d();
+    setup_box2d();
+    while (!stop_game) {
+        game_running = false;
 
-    while (true) {
-        WPAD_ScanPads();
-        u32 pressed = WPAD_ButtonsDown(0);
+        while (!stop_game) {
+            WPAD_ScanPads();
+            u32 pressed = WPAD_ButtonsDown(0);
 
-        if (pressed & WPAD_BUTTON_DOWN) {
-            ui_number++;
-            if (ui_number > 4) {
-                ui_number = 0;
+            if (pressed & WPAD_BUTTON_HOME) {
+                stop_game = true;
             }
-        }
 
-        if (pressed & WPAD_BUTTON_UP) {
-            ui_number--;
-            if (ui_number < 0) {
-                ui_number = 4;
-            }
-        }
-
-        if (pressed & (WPAD_BUTTON_RIGHT | WPAD_BUTTON_A)) {
-            if (ui_number == 0) {
-                break;
-            }
-            else if (ui_number == 1) {
-                difficulty++;
-                if (difficulty > 3 && !secret) {
-                    difficulty = 1;
+            if (pressed & WPAD_BUTTON_DOWN) {
+                ui_number++;
+                if (ui_number > 4) {
+                    ui_number = 0;
                 }
             }
-            else if (ui_number == 2) {
-                telemode = !telemode;
-            }
-            else if (ui_number == 3) {
-                tnt_boxes = !tnt_boxes;
-            }
-            else if (ui_number == 4) {
-                secret = !secret;
-            }
-        }
 
-        if (pressed & (WPAD_BUTTON_LEFT | WPAD_BUTTON_B)) {
-            if (ui_number == 0) {
-                break;
-            }
-            else if (ui_number == 1) {
-                difficulty--;
-                if (difficulty < 1 && !secret) {
-                    difficulty = 3;
+            if (pressed & WPAD_BUTTON_UP) {
+                ui_number--;
+                if (ui_number < 0) {
+                    ui_number = 4;
                 }
             }
-            else if (ui_number == 2) {
-                telemode = !telemode;
-            }
-            else if (ui_number == 3) {
-                tnt_boxes = !tnt_boxes;
-            }
-            else if (ui_number == 4) {
-                secret = !secret;
-            }
-        }
 
-        GRRLIB_FillScreen(GRRLIB_PURPLE);
-        draw_wiimotes();
-        
-        
-        if (ui_number == 0) {
-            GRRLIB_Printf(250, 200, tex_BMfont5, GRRLIB_WHITE, 1, "> Start");
-        }
-        else {
-            GRRLIB_Printf(250, 200, tex_BMfont5, GRRLIB_WHITE, 1, "Start");
-        }
-
-        if (ui_number == 1) {
-            GRRLIB_Printf(250, 225, tex_BMfont5, GRRLIB_WHITE, 1, "> Difficulty %d", difficulty);
-        }
-        else {
-            GRRLIB_Printf(250, 225, tex_BMfont5, GRRLIB_WHITE, 1, "Difficulty %d", difficulty);
-        }
-
-        if (ui_number == 2) {
-            GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "> Teleport mode %d", telemode);
-        }
-        else {
-            GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "Teleport mode %d", telemode);
-        }
-
-        if (ui_number == 3) {
-            GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "> Tnt boxes %d", tnt_boxes);
-        }
-        else {
-            GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "Tnt boxes %d", tnt_boxes);
-        }
-
-        if (ui_number == 4) {
-            GRRLIB_Printf(250, 300, tex_BMfont5, GRRLIB_WHITE, 1, "> Secret %d", secret);
-        }
-
-        GRRLIB_Render();
-    }
-
-	while(true) {
-        box2d_next_frame();
-        time_left = time_limit - (frame / 60.0);
-        
-        WPAD_ScanPads();
-        u32 pressed = WPAD_ButtonsDown(0) | WPAD_ButtonsDown(1) | WPAD_ButtonsDown(2) | WPAD_ButtonsDown(3);
-
-        if ((time_left <= 0.0) || (difficulty > 2 && score < 0) || (pressed & WPAD_BUTTON_HOME)) {
-            break;
-        }
-
-        for (int wiimote = 0; wiimote <= 3; wiimote++) {
-            WPADData* data = WPAD_Data(wiimote);
-
-            if(!data->data_present) {
-                continue;
-            }
-
-            if (pressed & WPAD_BUTTON_B) {
-                for (int i=0; i<boxes; i++) {
-                    if (box_img[i] == NOT_BOX) {
-                        continue;
+            if (pressed & (WPAD_BUTTON_RIGHT | WPAD_BUTTON_A)) {
+                if (ui_number == 0) {
+                    game_running = true;
+                    break;
+                }
+                else if (ui_number == 1) {
+                    difficulty++;
+                    if (difficulty > 3 && !secret) {
+                        difficulty = 1;
                     }
+                }
+                else if (ui_number == 2) {
+                    telemode = !telemode;
+                }
+                else if (ui_number == 3) {
+                    tnt_boxes = !tnt_boxes;
+                }
+                else if (ui_number == 4) {
+                    secret = !secret;
+                }
+            }
 
-                    if (disToPoint(data->ir.x, data->ir.y, b2Body_GetPosition(boxID[i]).x, b2Body_GetPosition(boxID[i]).y) > box_size[i] * 25) {
-                        continue;
+            if (pressed & (WPAD_BUTTON_LEFT | WPAD_BUTTON_B)) {
+                if (ui_number == 0) {
+                    game_running = true;
+                    break;
+                }
+                else if (ui_number == 1) {
+                    difficulty--;
+                    if (difficulty < 1 && !secret) {
+                        difficulty = 3;
                     }
+                }
+                else if (ui_number == 2) {
+                    telemode = !telemode;
+                }
+                else if (ui_number == 3) {
+                    tnt_boxes = !tnt_boxes;
+                }
+                else if (ui_number == 4) {
+                    secret = !secret;
+                }
+            }
 
-                    box_hp[i] -= 1;
-                    score += box_score[i];
-                    box_hiting[i] = 6;
+            GRRLIB_FillScreen(GRRLIB_PURPLE);
+            draw_wiimotes();
+            
+            
+            if (ui_number == 0) {
+                GRRLIB_Printf(250, 200, tex_BMfont5, GRRLIB_WHITE, 1, "> Start");
+            }
+            else {
+                GRRLIB_Printf(250, 200, tex_BMfont5, GRRLIB_WHITE, 1, "Start");
+            }
 
-                    if (box_img[i] == TELE_BOX || telemode) {
-                        respawn_box(i);
-                    }
+            if (ui_number == 1) {
+                GRRLIB_Printf(250, 225, tex_BMfont5, GRRLIB_WHITE, 1, "> Difficulty %d", difficulty);
+            }
+            else {
+                GRRLIB_Printf(250, 225, tex_BMfont5, GRRLIB_WHITE, 1, "Difficulty %d", difficulty);
+            }
 
-                    if (box_hp[i] <= 0) {
-                        b2Body_Disable(boxID[i]);
-                        box_img[i] = NOT_BOX;
+            if (ui_number == 2) {
+                GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "> Teleport mode %d", telemode);
+            }
+            else {
+                GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "Teleport mode %d", telemode);
+            }
 
-                        if (box_img[i] != TNT_BOX) {
-                            time_limit += 0.1 / difficulty;
+            if (ui_number == 3) {
+                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "> Tnt boxes %d", tnt_boxes);
+            }
+            else {
+                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "Tnt boxes %d", tnt_boxes);
+            }
+
+            if (ui_number == 4) {
+                GRRLIB_Printf(250, 300, tex_BMfont5, GRRLIB_WHITE, 1, "> Secret %d", secret);
+            }
+
+            GRRLIB_Render();
+        }
+
+        while(game_running) {
+            box2d_next_frame();
+            time_left = time_limit - (frame / 60.0);
+            
+            WPAD_ScanPads();
+            u32 pressed = WPAD_ButtonsDown(0) | WPAD_ButtonsDown(1) | WPAD_ButtonsDown(2) | WPAD_ButtonsDown(3);
+
+            if ((time_left <= 0.0) || (difficulty > 2 && score < 0)) {
+                game_running = false;
+            }
+            
+            if (pressed & WPAD_BUTTON_HOME) {
+                game_running = false;
+                stop_game = true;
+            }
+
+            for (int wiimote = 0; wiimote <= 3; wiimote++) {
+                WPADData* data = WPAD_Data(wiimote);
+
+                if(!data->data_present) {
+                    continue;
+                }
+
+                if (pressed & WPAD_BUTTON_B) {
+                    for (int i=0; i<boxes; i++) {
+                        if (box_img[i] == NOT_BOX) {
+                            continue;
+                        }
+
+                        if (disToPoint(data->ir.x, data->ir.y, b2Body_GetPosition(boxID[i]).x, b2Body_GetPosition(boxID[i]).y) > box_size[i] * 25) {
+                            continue;
+                        }
+
+                        box_hp[i] -= 1;
+                        score += box_score[i];
+                        box_hiting[i] = 6;
+
+                        if (box_img[i] == TELE_BOX || telemode) {
+                            respawn_box(i);
+                        }
+
+                        if (box_hp[i] <= 0) {
+                            b2Body_Disable(boxID[i]);
+                            box_img[i] = NOT_BOX;
+
+                            if (box_img[i] != TNT_BOX) {
+                                time_limit += 0.1 / difficulty;
+                            }
                         }
                     }
                 }
             }
+            // draw
+            GRRLIB_FillScreen(GRRLIB_PURPLE);
+
+            b2Vec2 pos = b2Body_GetPosition(groundId);
+            b2Rot rot = b2Body_GetRotation(groundId);
+            draw(pos.x, pos.y, tex_thing_1, rot, 10, 10, 0xffffffff);
+
+            draw_boxes();
+            draw_wiimotes();
+
+            GRRLIB_Printf(250, 5, tex_BMfont5, GRRLIB_WHITE, 1, "Time %0.1f", time_left);
+            GRRLIB_Printf(250, 20, tex_BMfont5, GRRLIB_WHITE, 1, "Score %d", score);
+            GRRLIB_Render();
         }
-        // draw
-        GRRLIB_FillScreen(GRRLIB_PURPLE);
-
-        b2Vec2 pos = b2Body_GetPosition(groundId);
-        b2Rot rot = b2Body_GetRotation(groundId);
-        draw(pos.x, pos.y, tex_thing_1, rot, 10, 10, 0xffffffff);
-
-        draw_boxes();
-        draw_wiimotes();
-
-        GRRLIB_Printf(250, 5, tex_BMfont5, GRRLIB_WHITE, 1, "Time %0.1f", time_left);
-        GRRLIB_Printf(250, 20, tex_BMfont5, GRRLIB_WHITE, 1, "Score %d", score);
-        GRRLIB_Render();
+        time_limit = 30.0;
+        frame = 0;
+        score = 0;
+        ui_number = 1;
+        for (int i=0; i<boxes; i++) {
+            b2Body_Disable(boxID[i]);
+            box_img[i] = NOT_BOX;
+        }
     }
-	// clean up box2d and GRRLIB
-	clean_up_box2d();
+	// clean up
+    clean_up_box2d();
     GRRLIB_FreeTexture(tex_box);
     GRRLIB_FreeTexture(tex_gold_box);
     GRRLIB_FreeTexture(tex_tele_box);
