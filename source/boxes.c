@@ -92,19 +92,19 @@ void box2d_next_frame(void) {
         int rang_box_size = rand() % 3 + 1;
 
         // the boss boxes
-        if (frame == 900) {
+        if (frame % 1200 == 0 && frame >= 1200) {
             boxDef.position = (b2Vec2){0, 12};
             if (difficulty <= 1) {
-                make_box(1.0, 4.0, -10.0, 7.0, BOX, 60, 50);
+                make_box(1.0, 4.0, -10.0, 7.0, BOX, 40, 120);
             }
             else if (difficulty == 2) {
-                make_box(1.0, 8.0, -10.0, 5.0, GOLD_BOX, 40, 50);
+                make_box(1.0, 8.0, -10.0, 5.0, GOLD_BOX, 60, 60);
             }
             else if (difficulty == 3) {
-                make_box(1.0, 6.0, -5.0, 5.0, TELE_BOX, 30, 100);
+                make_box(1.0, 6.0, -5.0, 5.0, TELE_BOX, 20, 120);
             }
             else if (difficulty >= 4) {
-                make_box(1.0, 6.0, -10.0, 7.0, TNT_BOX, 1, -10000);
+                make_box(1.0, 6.0, -10.0, 7.0, TNT_BOX, 1, -5000);
             }
         }
         // the normal boxes
@@ -115,7 +115,7 @@ void box2d_next_frame(void) {
             make_box(1.0, pow(1.5 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, GOLD_BOX, 2 * rang_box_size, 30);
         }
         else if (rand() % 12 == 0 && tnt_boxes) {
-            make_box(1.0, pow(1.0 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, TNT_BOX, 1, -80 * difficulty);
+            make_box(1.0, pow(1.0 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, TNT_BOX, 1, -100 * difficulty);
         }
         else {
             make_box(1.0, pow(1.0 * rang_box_size, 2), -80, 1.0 * rang_box_size, BOX, 2 * rang_box_size, 10);
