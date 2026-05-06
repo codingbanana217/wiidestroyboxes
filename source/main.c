@@ -12,7 +12,7 @@
 #include "BMfont5_png.h"
 GRRLIB_texImg *tex_BMfont5;
 
-//Image
+//Images
 #include "box_png.h"
 GRRLIB_texImg *tex_box;
 #include "gold_box_png.h"
@@ -28,7 +28,7 @@ GRRLIB_texImg *tex_shot;
 #include "white_png.h"
 GRRLIB_texImg *tex_white;
 
-// Colors
+// colors
 #define GRRLIB_BLACK  0x000000FF
 #define GRRLIB_WHITE  0xFFFFFFFF
 #define GRRLIB_GRAY   0x808080FF
@@ -43,11 +43,12 @@ void box2d_next_frame(void);
 void respawn_box(int boxID_to_move);
 void clean_up_box2d(void);
 int clamp(int value, int min, int max);
-int disToPoint(float pointX, float pointY, float boxX, float boxY);
+int dis_to_wiimote(float pointX, float pointY, float boxX, float boxY);
 void draw(float x, float y, GRRLIB_texImg *img, b2Rot rot, float size_x, float size_y, int color);
 void draw_boxes();
 void draw_wiimotes();
 
+// from boxes.c
 extern int frame;
 extern int boxes;
 extern int box_hp[MAX_BOXES];
@@ -74,11 +75,11 @@ int main(int argc, char **argv) {
     // setup
     GRRLIB_Init();
     
-    // font
+    // import font
     tex_BMfont5 = GRRLIB_LoadTexture(BMfont5_png);
     GRRLIB_InitTileSet(tex_BMfont5, 8, 16, 0); 
 
-    // image
+    // import images
     tex_box = GRRLIB_LoadTexture(box_png);
     GRRLIB_SetMidHandle(tex_box, true);
 
@@ -199,10 +200,10 @@ int main(int argc, char **argv) {
             }
 
             if (ui_number == 3) {
-                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "> Tnt boxes %d", tnt_boxes);
+                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "> TNT boxes %d", tnt_boxes);
             }
             else {
-                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "Tnt boxes %d", tnt_boxes);
+                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "TNT boxes %d", tnt_boxes);
             }
 
             if (ui_number == 4) {
@@ -228,25 +229,34 @@ int main(int argc, char **argv) {
                 stop_game = true;
             }
 
+            for (int i=0; i<boxes; i++) {
+                if (b2Body_GetPosition(boxID[i]).y < -10) {
+                    b2Body_Disable(boxID[i]);
+                    box_img[i] = NOT_A_BOX;
+                }
+            }
+            
             for (int wiimote = 0; wiimote <= 3; wiimote++) {
                 WPADData* data = WPAD_Data(wiimote);
-
+                
                 if(!data->data_present) {
                     continue;
                 }
 
                 if (pressed & WPAD_BUTTON_B) {
                     for (int i=0; i<boxes; i++) {
-                        if (box_img[i] == NOT_BOX) {
+                        if (box_img[i] == NOT_A_BOX) {
                             continue;
                         }
 
-                        if (disToPoint(data->ir.x, data->ir.y, b2Body_GetPosition(boxID[i]).x, b2Body_GetPosition(boxID[i]).y) > box_size[i] * 25) {
+                        if (dis_to_wiimote(data->ir.x, data->ir.y, b2Body_GetPosition(boxID[i]).x, b2Body_GetPosition(boxID[i]).y) > box_size[i] * 25) {
                             continue;
                         }
-
+                        
                         box_hp[i] -= 1;
                         score += box_score[i];
+
+                        // 6 frames of hiting effect
                         box_hiting[i] = 6;
 
                         if (box_img[i] == TELE_BOX || telemode) {
@@ -255,8 +265,8 @@ int main(int argc, char **argv) {
 
                         if (box_hp[i] <= 0) {
                             b2Body_Disable(boxID[i]);
-                            box_img[i] = NOT_BOX;
-
+                            box_img[i] = NOT_A_BOX;
+                            
                             if (box_img[i] != TNT_BOX) {
                                 time_limit += 0.1 / difficulty;
                             }
@@ -264,30 +274,35 @@ int main(int argc, char **argv) {
                     }
                 }
             }
+            
             // draw
             GRRLIB_FillScreen(GRRLIB_PURPLE);
-
+            
             b2Vec2 pos = b2Body_GetPosition(groundId);
             b2Rot rot = b2Body_GetRotation(groundId);
             draw(pos.x, pos.y, tex_thing_1, rot, 10, 10, 0xffffffff);
 
             draw_boxes();
             draw_wiimotes();
+            
 
             GRRLIB_Printf(250, 5, tex_BMfont5, GRRLIB_WHITE, 1, "Time %0.1f", time_left);
             GRRLIB_Printf(250, 20, tex_BMfont5, GRRLIB_WHITE, 1, "Score %d", score);
             GRRLIB_Render();
         }
+        // reset game
         time_limit = 30.0;
         frame = 0;
         score = 0;
         ui_number = 1;
+
         for (int i=0; i<boxes; i++) {
             b2Body_Disable(boxID[i]);
-            box_img[i] = NOT_BOX;
+            box_img[i] = NOT_A_BOX;
         }
     }
-	// clean up
+
+	// clean up game and exit
     clean_up_box2d();
     GRRLIB_FreeTexture(tex_box);
     GRRLIB_FreeTexture(tex_gold_box);
@@ -308,7 +323,7 @@ int clamp(int value, int min, int max) {
 }
 
 
-int disToPoint(float pointX, float pointY, float boxX, float boxY) {
+int dis_to_wiimote(float pointX, float pointY, float boxX, float boxY) {
     float offsetX = abs(boxX * 25 + 320 - pointX);
     float offsetY = abs(boxY * - 25 + 264  - pointY);
     return (offsetX + offsetY) / 2;
@@ -316,6 +331,7 @@ int disToPoint(float pointX, float pointY, float boxX, float boxY) {
 
 
 void draw(float x, float y, GRRLIB_texImg *img, b2Rot rot, float size_x, float size_y, int color) {
+    // convert box2d coordinates to screen coordinates and draw the image with rotation and size
     GRRLIB_DrawImg((x * 25) + 320, (y * - 25) + 264, img, b2Rot_GetAngle(rot) / B2_PI * - 180, size_x * 0.25, size_y * 0.25, color);
 }
 
@@ -330,13 +346,13 @@ void draw_boxes() {
         }
 
         for (int i=0; i<boxes; i++) {
-            if (box_img[i] == NOT_BOX) {
+            if (box_img[i] == NOT_A_BOX) {
                 continue;
             }
 
             b2Vec2 pos = b2Body_GetPosition(boxID[i]);
             b2Rot rot = b2Body_GetRotation(boxID[i]);
-            int light_effect = clamp(disToPoint(data->ir.x, data->ir.y, pos.x, pos.y) * time_limit / time_left, 0, 255);
+            int light_effect = clamp(dis_to_wiimote(data->ir.x, data->ir.y, pos.x, pos.y) * time_limit / time_left, 0, 255);
             
             if (box_hiting[i] > 0) {
                 draw(pos.x, pos.y, tex_white, rot, box_size[i], box_size[i], 0xFFFFFFFF - light_effect);

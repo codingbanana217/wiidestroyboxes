@@ -29,18 +29,19 @@ const float timeStep = 1.0 / 60.0;
 const int subStep = 4;
 int frame = 0;
 
+// from main.c
 extern int difficulty;
 extern int score;
 extern bool tnt_boxes;
 
 
 void setup_box2d(void) {
-    // make world
+    // make the world
     worldDef = b2DefaultWorldDef();
     worldDef.gravity = (b2Vec2){0.0, 0.0};
     worldId = b2CreateWorld(&worldDef);
 
-    // make ground
+    // make the ground
     groundBodyDef = b2DefaultBodyDef();
     groundBodyDef.gravityScale = 0;
     groundId = b2CreateBody(worldId, &groundBodyDef);
@@ -70,7 +71,6 @@ static void make_box(float friction, float density, float gravity, float size, B
     box_density[boxes] = density * size * 0.4;
 
     box_img[boxes] = img;
-
     box_hiting[boxes] = 0;
 
     boxID[boxes] = b2CreateBody(worldId, &boxDef);
@@ -86,16 +86,16 @@ void box2d_next_frame(void) {
         score -= 10 * difficulty;
     }
     
-    // make boxs
+    // make a box
     if (frame % 5 == 0) {
         boxDef.position = (b2Vec2){rand() % 10 - 5, 12};
         int rang_box_size = rand() % 3 + 1;
 
-        // boss boxes
+        // the boss boxes
         if (frame == 900) {
             boxDef.position = (b2Vec2){0, 12};
             if (difficulty <= 1) {
-                make_box(1.0, 4.0, -20.0, 7.0, BOX, 50, 50);
+                make_box(1.0, 4.0, -10.0, 7.0, BOX, 60, 50);
             }
             else if (difficulty == 2) {
                 make_box(1.0, 8.0, -10.0, 5.0, GOLD_BOX, 40, 50);
@@ -104,32 +104,32 @@ void box2d_next_frame(void) {
                 make_box(1.0, 6.0, -5.0, 5.0, TELE_BOX, 30, 100);
             }
             else if (difficulty >= 4) {
-                make_box(1.0, 6.0, -20.0, 7.0, TNT_BOX, 1, -10000);
+                make_box(1.0, 6.0, -10.0, 7.0, TNT_BOX, 1, -10000);
             }
         }
-        // boxes
+        // the normal boxes
         else if (rand() % 12 == 0) {
-            make_box(1.0, pow(0.75 * rang_box_size, 2), -20.0, 1.0 * rang_box_size, TELE_BOX, 1 * rang_box_size, 50);
+            make_box(1.0, pow(0.75 * rang_box_size, 2), -20.0, 1.0 * rang_box_size, TELE_BOX, 1 * rang_box_size, 60);
         }
         else if (rand() % 12 == 0) {
             make_box(1.0, pow(1.5 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, GOLD_BOX, 2 * rang_box_size, 30);
         }
         else if (rand() % 12 == 0 && tnt_boxes) {
-            make_box(1.0, pow(1.0 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, TNT_BOX, 1, -70 * difficulty);
+            make_box(1.0, pow(1.0 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, TNT_BOX, 1, -80 * difficulty);
         }
         else {
             make_box(1.0, pow(1.0 * rang_box_size, 2), -80, 1.0 * rang_box_size, BOX, 2 * rang_box_size, 10);
         }
     }
 
-    // gravity for the boxes and boxes hiting effect
+    // gravity and hiting effect for the boxes
     for (int i=0; i<boxes; i++) {
         b2Vec2 apply_force = {0, box_density[i] * box_gravity[i]};
         b2Body_ApplyForceToCenter(boxID[i], apply_force, true);
         box_hiting[i] -= 1;
     }
     
-    // move ground
+    // move the ground
     b2Body_SetTransform(groundId, (b2Vec2){0.0, - 16.0}, b2MakeRot(sin(frame / 90.0 * difficulty) * 0.35));
     frame++;
 }

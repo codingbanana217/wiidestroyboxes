@@ -1,9 +1,9 @@
-<?xml version="1.0.0" encoding="UTF-8" standalone="yes"?>
-<app version="1.0.0">
+<?xml version="1.0.1" encoding="UTF-8" standalone="yes"?>
+<app version="1.0.1">
   <name>Wiidestroyboxes</name>
   <coder>codingbanana217</coder>
-  <version>1.0.0</version>
-  <release_date>202601</release_date>
+  <version>1.0.1</version>
+  <release_date>202605</release_date>
   <short_description>Wiidestroyboxes is my DofE project</short_description>
   <long_description>
 Wiidestroyboxes is my DofE project that will run on the Wii and dolphin emulator.
