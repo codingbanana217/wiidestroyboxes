@@ -285,7 +285,6 @@ int main(int argc, char **argv) {
             draw_boxes();
             draw_wiimotes();
             
-
             GRRLIB_Printf(250, 5, tex_BMfont5, GRRLIB_WHITE, 1, "Time %0.1f", time_left);
             GRRLIB_Printf(250, 20, tex_BMfont5, GRRLIB_WHITE, 1, "Score %d", score);
             GRRLIB_Render();
@@ -300,6 +299,8 @@ int main(int argc, char **argv) {
             b2Body_Disable(boxID[i]);
             box_img[i] = NOT_A_BOX;
         }
+        
+        boxes = 0;
     }
 
 	// clean up game and exit
