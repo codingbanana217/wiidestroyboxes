@@ -67,8 +67,9 @@ int ui_number = 0;
 bool game_running = false;
 bool stop_game = false;
 bool secret = false;
-bool telemode = false;
 bool tnt_boxes = true;
+bool tele_boxes = true;
+bool telemode = false;
 
 
 int main(int argc, char **argv) {
@@ -119,7 +120,7 @@ int main(int argc, char **argv) {
 
             if (pressed & WPAD_BUTTON_DOWN) {
                 ui_number++;
-                if (ui_number > 4) {
+                if (ui_number > 5) {
                     ui_number = 0;
                 }
             }
@@ -127,50 +128,43 @@ int main(int argc, char **argv) {
             if (pressed & WPAD_BUTTON_UP) {
                 ui_number--;
                 if (ui_number < 0) {
-                    ui_number = 4;
+                    ui_number = 5;
                 }
             }
 
             if (pressed & (WPAD_BUTTON_RIGHT | WPAD_BUTTON_A)) {
-                if (ui_number == 0) {
-                    game_running = true;
-                    break;
-                }
-                else if (ui_number == 1) {
+                if (ui_number == 1) {
                     difficulty++;
                     if (difficulty > 3 && !secret) {
                         difficulty = 1;
                     }
                 }
-                else if (ui_number == 2) {
-                    telemode = !telemode;
-                }
-                else if (ui_number == 3) {
-                    tnt_boxes = !tnt_boxes;
-                }
-                else if (ui_number == 4) {
-                    secret = !secret;
-                }
             }
 
             if (pressed & (WPAD_BUTTON_LEFT | WPAD_BUTTON_B)) {
-                if (ui_number == 0) {
-                    game_running = true;
-                    break;
-                }
-                else if (ui_number == 1) {
+                if (ui_number == 1) {
                     difficulty--;
                     if (difficulty < 1 && !secret) {
                         difficulty = 3;
                     }
                 }
-                else if (ui_number == 2) {
-                    telemode = !telemode;
+            }
+
+            if (pressed & (WPAD_BUTTON_LEFT | WPAD_BUTTON_B | WPAD_BUTTON_RIGHT | WPAD_BUTTON_A)) {
+                if (ui_number == 0) {
+                    game_running = true;
+                    break;
                 }
-                else if (ui_number == 3) {
+                else if (ui_number == 2) {
                     tnt_boxes = !tnt_boxes;
                 }
+                else if (ui_number == 3) {
+                    tele_boxes = !tele_boxes;
+                }
                 else if (ui_number == 4) {
+                    telemode = !telemode;
+                }
+                else if (ui_number == 5) {
                     secret = !secret;
                 }
             }
@@ -191,23 +185,30 @@ int main(int argc, char **argv) {
             else {
                 GRRLIB_Printf(250, 225, tex_BMfont5, GRRLIB_WHITE, 1, "Difficulty %d", difficulty);
             }
-
+            
             if (ui_number == 2) {
-                GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "> Teleport mode %d", telemode);
+                GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "> TNT boxes %d", tnt_boxes);
             }
             else {
-                GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "Teleport mode %d", telemode);
+                GRRLIB_Printf(250, 250, tex_BMfont5, GRRLIB_WHITE, 1, "TNT boxes %d", tnt_boxes);
             }
-
+            
             if (ui_number == 3) {
-                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "> TNT boxes %d", tnt_boxes);
+                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "> Teleport boxes %d", tele_boxes);
             }
             else {
-                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "TNT boxes %d", tnt_boxes);
+                GRRLIB_Printf(250, 275, tex_BMfont5, GRRLIB_WHITE, 1, "Teleport boxes %d", tele_boxes);
             }
 
             if (ui_number == 4) {
-                GRRLIB_Printf(250, 300, tex_BMfont5, GRRLIB_WHITE, 1, "> Secret %d", secret);
+                GRRLIB_Printf(250, 300, tex_BMfont5, GRRLIB_WHITE, 1, "> Teleport mode %d", telemode);
+            }
+            else {
+                GRRLIB_Printf(250, 300, tex_BMfont5, GRRLIB_WHITE, 1, "Teleport mode %d", telemode);
+            }
+
+            if (ui_number == 5) {
+                GRRLIB_Printf(250, 325, tex_BMfont5, GRRLIB_WHITE, 1, "> Secret %d", secret);
             }
 
             GRRLIB_Render();
