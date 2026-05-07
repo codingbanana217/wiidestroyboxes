@@ -83,8 +83,8 @@ static void make_box(float friction, float density, float gravity, float size, B
 void box2d_next_frame(void) {
     b2World_Step(worldId, timeStep, subStep);
 
-    if (frame % 60 == 0 && frame >= 300 && difficulty >= 3) {
-        score -= 10 * difficulty;
+    if (frame % (60 / difficulty) == 0 && frame >= 300 && difficulty >= 3) {
+        score -= 10;
     }
     
     // make a box
@@ -96,30 +96,30 @@ void box2d_next_frame(void) {
         if (frame % 1200 == 0 && frame >= 1200) {
             boxDef.position = (b2Vec2){0, 12};
             if (difficulty <= 1) {
-                make_box(1.0, 4.0, -10.0, 7.0, BOX, 40, 120);
+                make_box(1.0, 4.0, -10.0, 7.5, BOX, 50, 100);
             }
             else if (difficulty == 2) {
-                make_box(1.0, 8.0, -10.0, 5.0, GOLD_BOX, 60, 60);
+                make_box(1.0, 8.0, -10.0, 5.0, GOLD_BOX, 80, 50);
             }
             else if (difficulty == 3) {
-                make_box(1.0, 6.0, -5.0, 5.0, TELE_BOX, 20, 120);
+                make_box(1.0, 6.0, -5.0, 5.0, TELE_BOX, 30, 150);
             }
             else if (difficulty >= 4) {
-                make_box(1.0, 6.0, -10.0, 7.0, TNT_BOX, 1, -5000);
+                make_box(1.0, 6.0, -10.0, 7.5, TNT_BOX, 1, -5000);
             }
         }
         // the normal boxes
-        else if (rand() % 12 == 0 && tnt_boxes) {
+        else if (rand() % 10 == 0 && tnt_boxes) {
             make_box(1.0, pow(1.0 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, TNT_BOX, 1, -100 * difficulty);
         }
-        else if (rand() % 12 == 0 && tele_boxes) {
-            make_box(1.0, pow(0.75 * rang_box_size, 2), -5.0, 1.0 * rang_box_size, TELE_BOX, 1 * rang_box_size, 60);
+        else if (rand() % 14 == 0 && tele_boxes) {
+            make_box(1.0, pow(0.75 * rang_box_size, 2), -5.0, 1.0 * rang_box_size, TELE_BOX, 1 * rang_box_size, 50);
         }
         else if (rand() % 12 == 0) {
             make_box(1.0, pow(1.5 * rang_box_size, 2), -80.0, 1.0 * rang_box_size, GOLD_BOX, 2 * rang_box_size, 30);
         }
         else {
-            make_box(1.0, pow(1.0 * rang_box_size, 2), -80, 1.0 * rang_box_size, BOX, 2 * rang_box_size, 10);
+            make_box(1.0, pow(1.0 * rang_box_size, 2), -80, 1.0 * rang_box_size, BOX, 1.5 * rang_box_size, 10);
         }
     }
 

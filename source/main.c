@@ -265,12 +265,13 @@ int main(int argc, char **argv) {
                         }
 
                         if (box_hp[i] <= 0) {
+                            if (difficulty < 3) {
+                                time_limit += 0.08 / difficulty;
+                            }
+                            
                             b2Body_Disable(boxID[i]);
                             box_img[i] = NOT_A_BOX;
                             
-                            if (box_img[i] != TNT_BOX) {
-                                time_limit += 0.1 / difficulty;
-                            }
                         }
                     }
                 }
