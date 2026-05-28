@@ -221,6 +221,7 @@ int main(int argc, char **argv) {
             WPAD_ScanPads();
             u32 pressed = WPAD_ButtonsDown(0) | WPAD_ButtonsDown(1) | WPAD_ButtonsDown(2) | WPAD_ButtonsDown(3);
 
+            // end game logic
             if ((time_left <= 0.0) || (difficulty > 2 && score < 0)) {
                 game_running = false;
             }
@@ -230,7 +231,21 @@ int main(int argc, char **argv) {
                 stop_game = true;
             }
 
+            // box removing
             for (int i=0; i<boxes; i++) {
+                if (box_img[i] == NOT_A_BOX) {
+                    continue;
+                }
+
+                if (box_hp[i] <= 0 && box_hiting[i] < 0) {
+                    if (difficulty < 3) {
+                        time_limit += 0.08 / difficulty;
+                    }
+                    
+                    b2Body_Disable(boxID[i]);
+                    box_img[i] = NOT_A_BOX; 
+                }
+
                 if (b2Body_GetPosition(boxID[i]).y < -10) {
                     b2Body_Disable(boxID[i]);
                     box_img[i] = NOT_A_BOX;
@@ -262,16 +277,6 @@ int main(int argc, char **argv) {
 
                         if (box_img[i] == TELE_BOX || telemode) {
                             respawn_box(i);
-                        }
-
-                        if (box_hp[i] <= 0) {
-                            if (difficulty < 3) {
-                                time_limit += 0.08 / difficulty;
-                            }
-                            
-                            b2Body_Disable(boxID[i]);
-                            box_img[i] = NOT_A_BOX;
-                            
                         }
                     }
                 }
